@@ -1,5 +1,5 @@
         </div>
-        <footer class="page-footer"><span>SME ERP · Research and development build</span><span>All monetary values in KES</span></footer>
+        <footer class="page-footer"><span>SME ERP</span><span>All monetary values in KES</span></footer>
     </main>
 </div>
 <script>

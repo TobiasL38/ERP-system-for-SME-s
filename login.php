@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="login-page">
 <div class="login-decoration decor-one"></div><div class="login-decoration decor-two"></div>
 <main class="login-wrap">
-    <a class="brand login-brand" href="login.php"><span class="brand-mark">E</span><span><strong>SME ERP</strong><small>Business workspace</small></span></a>
+    <a class="brand login-brand" href="login.php"><span class="brand-mark">SME</span><span><strong>Enterprise Resource Planning</strong><small>Business workspace</small></span></a>
     <section class="login-card">
         <span class="eyebrow">WELCOME BACK</span>
         <h1>Sign in to your workspace</h1>
@@ -64,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password">
             <button class="button button-primary button-full" type="submit">Sign in <span aria-hidden="true">→</span></button>
         </form>
-        <div class="login-help"><strong>Initial local account</strong><br>Username: <code>admin</code><br>Password: <code>Admin@123</code><br><small>Change this password before using any real business data.</small></div>
     </section>
     <p class="login-foot">Enterprise Resource Planning · Small and Medium Enterprises</p>
 </main>

@@ -47,10 +47,7 @@ $lowStock = db()->query('SELECT p.id, p.sku, p.name, p.reorder_level, i.quantity
 $recentMovements = db()->query('SELECT sm.movement_type, sm.quantity, sm.previous_quantity, sm.new_quantity, sm.notes, sm.created_at, p.name AS product_name, p.sku, u.full_name FROM stock_movements sm JOIN products p ON p.id = sm.product_id LEFT JOIN users u ON u.id = sm.created_by ORDER BY sm.id DESC LIMIT 6')->fetchAll();
 require __DIR__ . '/includes/header.php';
 ?>
-<section class="welcome-banner">
-    <div><span class="eyebrow banner-eyebrow">YOUR BUSINESS AT A GLANCE</span><h2>Good work starts with a clear view.</h2><p>Keep track of your inventory and the business records connected to it.</p></div>
-    <div class="banner-mark" aria-hidden="true">ERP<span>+</span></div>
-</section>
+
 <section class="metrics-grid" aria-label="Business summary">
     <article class="metric-card"><div class="metric-label"><span class="metric-icon icon-blue">▦</span><span>Active products</span></div><div class="metric-value"><?= number_format($metrics['products']) ?></div><div class="metric-foot">Products in the catalogue</div></article>
     <article class="metric-card"><div class="metric-label"><span class="metric-icon icon-amber">!</span><span>Low-stock items</span></div><div class="metric-value"><?= number_format($metrics['low_stock']) ?></div><div class="metric-foot">At or below reorder level</div></article>

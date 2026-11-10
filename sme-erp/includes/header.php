@@ -4,20 +4,20 @@ $user = current_user();
 $activePage = basename($_SERVER['PHP_SELF'] ?? 'index.php');
 $role = $user['role'] ?? '';
 $navItems = [
-    ['file' => 'index.php', 'label' => 'Overview', 'icon' => '⌂', 'roles' => ['admin','manager','sales','inventory','procurement','accountant','hr']],
-    ['file' => 'products.php', 'label' => 'Products', 'icon' => '▦', 'roles' => ['admin','manager','inventory','procurement']],
-    ['file' => 'stock.php', 'label' => 'Stock movements', 'icon' => '↕', 'roles' => ['admin','manager','inventory','procurement']],
-    ['file' => 'sales.php', 'label' => 'Sales orders', 'icon' => '≡', 'roles' => ['admin','manager','sales']],
-    ['file' => 'invoices.php', 'label' => 'Invoices', 'icon' => '$', 'roles' => ['admin','manager','sales','accountant']],
-    ['file' => 'purchases.php', 'label' => 'Purchase orders', 'icon' => '🛒', 'roles' => ['admin','manager','procurement','inventory']],
-    ['file' => 'customers.php', 'label' => 'Customers', 'icon' => '♙', 'roles' => ['admin','manager','sales']],
-    ['file' => 'suppliers.php', 'label' => 'Suppliers', 'icon' => '⇄', 'roles' => ['admin','manager','procurement']],
-    ['file' => 'accounts.php', 'label' => 'Chart of Accounts', 'icon' => '📒', 'roles' => ['admin','manager','accountant']],
-    ['file' => 'journals.php', 'label' => 'Journal Entries', 'icon' => '✍', 'roles' => ['admin','manager','accountant']],
-    ['file' => 'reports.php', 'label' => 'Financial Reports', 'icon' => '📊', 'roles' => ['admin','manager','accountant']],
-    ['file' => 'employees.php', 'label' => 'Employees', 'icon' => '👥', 'roles' => ['admin','manager','hr']],
-    ['file' => 'attendance.php', 'label' => 'Attendance', 'icon' => '📅', 'roles' => ['admin','manager','hr']],
-    ['file' => 'leave.php', 'label' => 'Leave requests', 'icon' => '🌴', 'roles' => ['admin','manager','hr']],
+    ['file' => 'index.php', 'label' => 'Overview', 'roles' => ['admin','manager','sales','inventory','procurement','accountant','hr']],
+    ['file' => 'products.php', 'label' => 'Products', 'roles' => ['admin','manager','inventory','procurement']],
+    ['file' => 'stock.php', 'label' => 'Stock movements', 'roles' => ['admin','manager','inventory','procurement']],
+    ['file' => 'sales.php', 'label' => 'Sales orders', 'roles' => ['admin','manager','sales']],
+    ['file' => 'invoices.php', 'label' => 'Invoices', 'roles' => ['admin','manager','sales','accountant']],
+    ['file' => 'purchases.php', 'label' => 'Purchase orders', 'roles' => ['admin','manager','procurement','inventory']],
+    ['file' => 'customers.php', 'label' => 'Customers', 'roles' => ['admin','manager','sales']],
+    ['file' => 'suppliers.php', 'label' => 'Suppliers', 'roles' => ['admin','manager','procurement']],
+    ['file' => 'accounts.php', 'label' => 'Chart of Accounts', 'roles' => ['admin','manager','accountant']],
+    ['file' => 'journals.php', 'label' => 'Journal Entries', 'roles' => ['admin','manager','accountant']],
+    ['file' => 'reports.php', 'label' => 'Financial Reports', 'roles' => ['admin','manager','accountant']],
+    ['file' => 'employees.php', 'label' => 'Employees', 'roles' => ['admin','manager','hr']],
+    ['file' => 'attendance.php', 'label' => 'Attendance', 'roles' => ['admin','manager','hr']],
+    ['file' => 'leave.php', 'label' => 'Leave requests', 'roles' => ['admin','manager','hr']],
 ]; // <--- The array is properly closed here
 
 // Filter items by the current user's role
@@ -25,9 +25,9 @@ $navItems = array_values(array_filter($navItems, static fn(array $item): bool =>
 
 // Add Admin-only links OUTSIDE the array
 if ($role === 'admin') {
-    $navItems[] = ['file' => 'users.php', 'label' => 'User accounts', 'icon' => '⚙'];
-    $navItems[] = ['file' => 'settings.php', 'label' => 'System Settings', 'icon' => '🔧'];
-    $navItems[] = ['file' => 'audit.php', 'label' => 'Audit Trail', 'icon' => '🛡'];
+    $navItems[] = ['file' => 'users.php', 'label' => 'User accounts',];
+    $navItems[] = ['file' => 'settings.php', 'label' => 'System Settings',];
+    $navItems[] = ['file' => 'audit.php', 'label' => 'Audit Trail',];
 }
 $flashMessage = get_flash();
 ?>
@@ -52,16 +52,11 @@ $flashMessage = get_flash();
         <nav class="main-nav" aria-label="Main navigation">
             <?php foreach ($navItems as $item): ?>
                 <a class="nav-link <?= $activePage === $item['file'] ? 'active' : '' ?>" href="<?= e($item['file']) ?>">
-                    <span class="nav-icon" aria-hidden="true"><?= e($item['icon']) ?></span>
                     <span><?= e($item['label']) ?></span>
                 </a>
             <?php endforeach; ?>
         </nav>
-        <div class="sidebar-note">
-            <span class="status-dot"></span>
-            <div><strong>Local development</strong><small>XAMPP · MySQL</small></div>
-        </div>
-        <div class="sidebar-bottom">ERP Research Project<br><span>SME Operations · v0.1</span></div>
+        
     </aside>
     <main class="main-area">
         <header class="topbar">

@@ -4,9 +4,6 @@ require_once __DIR__ . '/includes/bootstrap.php';
 require_login();
 $pageTitle = 'Overview';
 
-// ... (existing dashboard metrics queries) ...
-
-// Sprint 7 Chart Data
 $chartLabels = [];
 $chartRevenue = [];
 $chartPOs = [];
@@ -47,20 +44,17 @@ $lowStock = db()->query('SELECT p.id, p.sku, p.name, p.reorder_level, i.quantity
 $recentMovements = db()->query('SELECT sm.movement_type, sm.quantity, sm.previous_quantity, sm.new_quantity, sm.notes, sm.created_at, p.name AS product_name, p.sku, u.full_name FROM stock_movements sm JOIN products p ON p.id = sm.product_id LEFT JOIN users u ON u.id = sm.created_by ORDER BY sm.id DESC LIMIT 6')->fetchAll();
 require __DIR__ . '/includes/header.php';
 ?>
-<section class="welcome-banner">
-    <div><span class="eyebrow banner-eyebrow">YOUR BUSINESS AT A GLANCE</span><h2>Good work starts with a clear view.</h2><p>Keep track of your inventory and the business records connected to it.</p></div>
-    <div class="banner-mark" aria-hidden="true">ERP<span>+</span></div>
-</section>
+
 <section class="metrics-grid" aria-label="Business summary">
-    <article class="metric-card"><div class="metric-label"><span class="metric-icon icon-blue">▦</span><span>Active products</span></div><div class="metric-value"><?= number_format($metrics['products']) ?></div><div class="metric-foot">Products in the catalogue</div></article>
-    <article class="metric-card"><div class="metric-label"><span class="metric-icon icon-amber">!</span><span>Low-stock items</span></div><div class="metric-value"><?= number_format($metrics['low_stock']) ?></div><div class="metric-foot">At or below reorder level</div></article>
-    <article class="metric-card"><div class="metric-label"><span class="metric-icon icon-green">♙</span><span>Customers</span></div><div class="metric-value"><?= number_format($metrics['customers']) ?></div><div class="metric-foot">Active customer records</div></article>
-    <article class="metric-card"><div class="metric-label"><span class="metric-icon icon-violet">⇄</span><span>Suppliers</span></div><div class="metric-value"><?= number_format($metrics['suppliers']) ?></div><div class="metric-foot">Active supplier records</div></article>
-    <article class="metric-card"><div class="metric-label"><span class="metric-icon icon-blue">≡</span><span>Sales this month</span></div><div class="metric-value"><?= e(money_short($salesThisMonth)) ?></div><div class="metric-foot">Confirmed + fulfilled orders</div></article>
-    <article class="metric-card"><div class="metric-label"><span class="metric-icon icon-amber">🛒</span><span>Active POs</span></div><div class="metric-value"><?= number_format($metrics['pending_pos']) ?></div><div class="metric-foot">Submitted or part-received</div></article>
-    <article class="metric-card"><div class="metric-label"><span class="metric-icon icon-blue">👥</span><span>Active Staff</span></div><div class="metric-value"><?= number_format($metrics['total_employees']) ?></div><div class="metric-foot">Employees currently active</div></article>
+    <article class="metric-card"><div class="metric-label"></span><span>Active products</span></div><div class="metric-value"><?= number_format($metrics['products']) ?></div><div class="metric-foot">Products in the catalogue</div></article>
+    <article class="metric-card"><div class="metric-label"></span><span>Low-stock items</span></div><div class="metric-value"><?= number_format($metrics['low_stock']) ?></div><div class="metric-foot">At or below reorder level</div></article>
+    <article class="metric-card"><div class="metric-label"></span><span>Customers</span></div><div class="metric-value"><?= number_format($metrics['customers']) ?></div><div class="metric-foot">Active customer records</div></article>
+    <article class="metric-card"><div class="metric-label"></span><span>Suppliers</span></div><div class="metric-value"><?= number_format($metrics['suppliers']) ?></div><div class="metric-foot">Active supplier records</div></article>
+    <article class="metric-card"><div class="metric-label"></span><span>Sales this month</span></div><div class="metric-value"><?= e(money_short($salesThisMonth)) ?></div><div class="metric-foot">Confirmed + fulfilled orders</div></article>
+    <article class="metric-card"><div class="metric-label"></span><span>Active POs</span></div><div class="metric-value"><?= number_format($metrics['pending_pos']) ?></div><div class="metric-foot">Submitted or part-received</div></article>
+    <article class="metric-card"><div class="metric-label"></span><span>Active Staff</span></div><div class="metric-value"><?= number_format($metrics['total_employees']) ?></div><div class="metric-foot">Employees currently active</div></article>
     <?php if (in_array(current_user()['role'], ['admin','manager','hr'])): ?>
-    <article class="metric-card"><div class="metric-label"><span class="metric-icon icon-amber">🌴</span><span>Pending Leave</span></div><div class="metric-value"><?= number_format($metrics['pending_leave']) ?></div><div class="metric-foot">Awaiting approval</div></article>
+    <article class="metric-card"><div class="metric-label"><span>Pending Leave</span></div><div class="metric-value"><?= number_format($metrics['pending_leave']) ?></div><div class="metric-foot">Awaiting approval</div></article>
     <?php endif; ?>
 </section>
 
@@ -164,27 +158,6 @@ require __DIR__ . '/includes/header.php';
         </tbody></table></div>
     <?php endif; ?>
 </section>
-<section class="roadmap-panel" style="border-color: #16845b; background: rgba(231, 247, 239, 0.4)">
-    <div>
-        <span class="eyebrow" style="color: #16845b">SYSTEM COMPLETE</span>
-        <h2>All 6 Sprints Deployed</h2>
-        <p>The core ERP is now fully functional: Authentication, Inventory, Sales, Procurement, Finance, HR, and Reporting. All modules are integrated, secure, and ready for User Acceptance Testing (UAT).</p>
-    </div>
-    <div class="roadmap-tags">
-        <span style="border-color:#16845b;color:#16845b">Auth ✓</span>
-        <span style="border-color:#16845b;color:#16845b">Inventory ✓</span>
-        <span style="border-color:#16845b;color:#16845b">Sales ✓</span>
-        <span style="border-color:#16845b;color:#16845b">Procure ✓</span>
-        <span style="border-color:#16845b;color:#16845b">Finance ✓</span>
-        <span style="border-color:#16845b;color:#16845b">HR ✓</span>
-        <span style="border-color:#16845b;color:#16845b">Reports ✓</span>
-    </div>
-
-    
-
-
-
-</section>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
@@ -221,4 +194,4 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-require __DIR__ . '/includes/footer.php'; ?>
+<?php require __DIR__ . '/includes/footer.php'; ?>
