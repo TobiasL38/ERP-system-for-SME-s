@@ -376,3 +376,155 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     .print-header { display: block !important; text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 10px; }
 }
 .print-header { display: none; }
+/* --- INVOICE SCREENSHOT STYLES --- */
+.invoice-container {
+    background: #fff;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 50px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    font-family: 'Inter', Helvetica, Arial, sans-serif;
+    color: #333;
+    border-radius: 8px;
+}
+
+.inv-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 50px;
+}
+
+.inv-logo {
+    width: 60px;
+    height: 60px;
+    background: #1a1a1a;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 8px; /* Or use an actual image */
+}
+
+.inv-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 42px;
+    font-weight: 400;
+    margin: 0;
+    color: #000;
+}
+
+.inv-billing-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.inv-billing-row h4 {
+    margin: 0 0 5px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.inv-meta {
+    text-align: right;
+}
+
+.inv-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.inv-items-table th {
+    text-align: left;
+    font-weight: 600;
+    padding: 10px 0;
+    border-bottom: 2px solid #333;
+    font-size: 14px;
+}
+
+.inv-items-table th:last-child,
+.inv-items-table td:last-child {
+    text-align: right;
+}
+
+.inv-items-table th:nth-child(2),
+.inv-items-table td:nth-child(2),
+.inv-items-table th:nth-child(3),
+.inv-items-table td:nth-child(3) {
+    text-align: center;
+}
+
+.inv-items-table td {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.inv-totals {
+    width: 250px;
+    margin-left: auto;
+    margin-bottom: 50px;
+}
+
+.inv-totals-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px;
+    font-size: 14px;
+}
+
+.inv-totals-row.total {
+    background: #1a1a1a;
+    color: #fff;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.inv-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 60px;
+    font-size: 13px;
+}
+
+.inv-thankyou {
+    font-family: 'Dancing Script', 'Brush Script MT', cursive;
+    font-size: 36px;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.inv-payment-info h4 {
+    margin: 0 0 10px;
+    font-size: 13px;
+}
+.inv-payment-info p {
+    margin: 0;
+    line-height: 1.5;
+    color: #555;
+}
+
+.inv-signature {
+    text-align: right;
+}
+
+.inv-signature .signature-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* Hide elements when printing */
+@media print {
+    body * { visibility: hidden; }
+    .invoice-container, .invoice-container * { visibility: visible; }
+    .invoice-container { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; margin: 0; padding: 0; }
+    .no-print { display: none !important; }
+}

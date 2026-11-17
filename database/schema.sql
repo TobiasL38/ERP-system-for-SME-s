@@ -1,5 +1,3 @@
--- SME ERP starter database schema
--- Import this file in phpMyAdmin. It creates the database and the initial administrator.
 CREATE DATABASE IF NOT EXISTS sme_erp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE sme_erp;
 

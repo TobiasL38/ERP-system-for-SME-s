@@ -11,6 +11,7 @@ if ($id < 1) {
 $error = '';
 $canRecordPayments = in_array(current_user()['role'], ['admin', 'manager', 'accountant'], true);
 
+// --- 1. HANDLE POST REQUESTS (PAYMENTS & VOIDING) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
     $action = post_string('action', 30);
@@ -76,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// --- 2. FETCH DATA FOR DISPLAY ---
 $stmt = db()->prepare(
     'SELECT i.*, so.order_number, so.order_date, so.subtotal, so.tax_amount, so.total_amount, so.vat_rate, so.status AS order_status,
             c.name AS customer_name, c.email AS customer_email, c.phone AS customer_phone, c.address AS customer_address
@@ -105,34 +107,114 @@ foreach ($payments as $payment) {
 }
 $balance = round((float) $invoice['amount'] - $totalPaid, 2);
 
-$statusPill = match ($invoice['status']) {
-    'paid'      => 'success',
-    'part_paid' => 'info',
-    'void'      => 'neutral',
-    default     => 'warning',
-};
-require __DIR__ . '/includes/header.php';
+// --- 3. START HTML OUTPUT ---
+require __DIR__ . '/includes/header.php'; 
 ?>
-<?php if ($error !== ''): ?><div class="alert alert-error"><?= e($error) ?></div><?php endif; ?>
 
-<section class="order-banner">
-    <div>
-        <span class="eyebrow">INVOICE</span>
-        <h2><?= e($invoice['invoice_number']) ?> · <?= e($invoice['customer_name']) ?></h2>
-        <p>Issued <?= e(format_day($invoice['invoice_date'])) ?> · Due <?= e(format_day($invoice['due_date'])) ?> · Order <a class="text-link" href="sale.php?id=<?= (int) $invoice['order_id'] ?>"><?= e($invoice['order_number']) ?></a></p>
-    </div>
-    <div class="order-meta">
-        <span class="pill pill-<?= $statusPill ?>"><?= e(ucfirst(str_replace('_', ' ', $invoice['status']))) ?></span>
+<!-- Import Fonts for the Invoice -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Dancing+Script:wght@600&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- Print Controls & Error Messages -->
+<div class="no-print">
+    <?php if ($error !== ''): ?><div class="alert alert-error" style="max-width: 800px; margin: 20px auto 0;"><?= e($error) ?></div><?php endif; ?>
+    <div style="max-width: 800px; margin: 20px auto 0; display: flex; justify-content: space-between; align-items: center;">
         <a class="text-link" href="invoices.php">← All invoices</a>
-        <button class="button button-secondary button-small" onclick="window.print()">🖨 Print / PDF</button>
+        <button class="button button-secondary button-small" onclick="window.print()">🖨 Print / Save as PDF</button>
     </div>
-    <div class="print-header">
-    <h1><?= e(get_setting('company_name', 'SME ERP')) ?></h1>
-    <p><?= e(get_setting('company_email')) ?> | <?= e(get_setting('company_phone')) ?></p>
 </div>
-</section>
 
-<section class="split-layout">
+<!-- ========================================== -->
+<!-- INVOICE VIEW (Matches the Screenshot)      -->
+<!-- ========================================== -->
+<div class="invoice-container">
+    
+    <!-- Header: Logo & Title -->
+    <div class="inv-header">
+        <div class="inv-logo">
+            <?= e(substr(get_setting('company_name', 'JKS'), 0, 3)) ?>
+        </div>
+        <h1 class="inv-title">Invoice</h1>
+    </div>
+
+    <!-- Billing Info & Meta -->
+    <div class="inv-billing-row">
+        <div>
+            <h4>Billed to:</h4>
+            <strong><?= e($invoice['customer_name']) ?></strong><br>
+            <?= e($invoice['customer_phone'] ?: 'No phone provided') ?><br>
+            <?= e($invoice['customer_address'] ?: 'No address provided') ?><br>
+            <?= e($invoice['customer_email']) ?>
+        </div>
+        <div class="inv-meta">
+            <strong>Invoice No. <?= e($invoice['invoice_number']) ?></strong><br>
+            <span><?= e(format_day($invoice['invoice_date'])) ?></span>
+        </div>
+    </div>
+
+    <!-- Items Table -->
+    <table class="inv-items-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($items as $item): ?>
+            <tr>
+                <td><?= e($item['name']) ?></td>
+                <td><?= e(number_format((float) $item['quantity'], 0)) ?></td>
+                <td><?= e(money($item['unit_price'])) ?></td>
+                <td><?= e(money($item['line_total'])) ?></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="inv-totals">
+        <div class="inv-totals-row">
+            <span>Subtotal</span>
+            <span><?= e(money($invoice['subtotal'])) ?></span>
+        </div>
+        <div class="inv-totals-row">
+            <span>Tax (<?= e(number_format((float) $invoice['vat_rate'], 0)) ?>%)</span>
+            <span><?= e(money($invoice['tax_amount'])) ?></span>
+        </div>
+        <div class="inv-totals-row total">
+            <span>Total</span>
+            <span><?= e(money($invoice['amount'])) ?></span>
+        </div>
+    </div>
+
+    <!-- Footer: Thank you, Payment Info, Signature -->
+    <div class="inv-footer">
+        <div>
+            <div class="inv-thankyou">Thank You!</div>
+            <div class="inv-payment-info">
+                <h4>Payment information</h4>
+                <p>
+                    <?= e(get_setting('company_name', 'Company')) ?> Bank<br>
+                    Account Name: <?= e(get_setting('company_name', 'Company')) ?><br>
+                    Account No: 1234 5678 9012<br>
+                    Pay by: <?= e(format_day($invoice['due_date'])) ?>
+                </p>
+            </div>
+        </div>
+        <div class="inv-signature">
+            <div class="signature-name"><?= e(get_setting('company_name', 'Company')) ?></div>
+            <p><?= e(get_setting('company_email')) ?> | <?= e(get_setting('company_phone')) ?></p>
+            <p><?= e(get_setting('company_address', '123 Anywhere St., Any City')) ?></p>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- RECORD PAYMENT & HISTORY (Hidden on Print) -->
+<!-- ========================================== -->
+<section class="split-layout no-print" style="margin-top: 40px;">
     <article class="panel form-panel">
         <div class="panel-heading"><div><h2>Record payment</h2><p>Balance: <?= e(money($balance)) ?></p></div></div>
         <?php if ($invoice['status'] === 'paid'): ?>
@@ -175,29 +257,7 @@ require __DIR__ . '/includes/header.php';
     </article>
 
     <article class="panel list-panel">
-        <div class="panel-heading"><div><h2>Invoice details</h2><p>For <?= e($invoice['customer_name']) ?></p></div></div>
-        <div class="info-note" style="margin-top:0">
-            <strong><?= e($invoice['customer_name']) ?></strong>
-            <p><?= e($invoice['customer_email'] ?: 'No email recorded') ?> · <?= e($invoice['customer_phone'] ?: 'No phone recorded') ?></p>
-            <?php if ($invoice['customer_address']): ?><p><?= e($invoice['customer_address']) ?></p><?php endif; ?>
-        </div>
-        <div class="table-wrap"><table>
-            <thead><tr><th>Product</th><th>Qty</th><th>Unit price</th><th>Line total</th></tr></thead>
-            <tbody>
-            <?php foreach ($items as $item): ?>
-                <tr><td><strong><?= e($item['name']) ?></strong><small class="table-subtext"><?= e($item['sku']) ?></small></td><td><?= e(number_format((float) $item['quantity'], 2)) ?></td><td><?= e(money($item['unit_price'])) ?></td><td><?= e(money($item['line_total'])) ?></td></tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table></div>
-        <div class="totals-list">
-            <div><span>Subtotal</span><span><?= e(money($invoice['subtotal'])) ?></span></div>
-            <div><span>VAT (<?= e(number_format((float) $invoice['vat_rate'], 2)) ?>%)</span><span><?= e(money($invoice['tax_amount'])) ?></span></div>
-            <div class="total-row"><span>Invoice amount</span><span><?= e(money($invoice['amount'])) ?></span></div>
-            <div><span>Total paid</span><span><?= e(money($totalPaid)) ?></span></div>
-            <div class="total-row"><span>Balance due</span><span><?= e(money($balance)) ?></span></div>
-        </div>
-
-        <h3 style="margin:22px 0 12px;font:800 13px Manrope,sans-serif">Payment history</h3>
+        <div class="panel-heading"><div><h2>Payment history</h2></div></div>
         <?php if (!$payments): ?>
             <div class="empty-state compact"><strong>No payments yet</strong><p>Recorded payments will appear here.</p></div>
         <?php else: ?>

@@ -1,7 +1,6 @@
 <?php
 declare(strict_types=1);
 
-// Local XAMPP defaults. Change these values for your own MySQL environment.
 const DB_HOST = '127.0.0.1';
 const DB_NAME = 'sme_erp';
 const DB_USER = 'root';
