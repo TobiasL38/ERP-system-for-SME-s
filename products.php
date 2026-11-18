@@ -59,6 +59,12 @@ if (isset($_GET['edit'])) {
     $stmt->execute([(int) $_GET['edit']]);
     $editing = $stmt->fetch() ?: null;
 }
+
+
+$catStmt = db()->query("SELECT DISTINCT category FROM products WHERE category IS NOT NULL AND category != '' ORDER BY category ASC");
+$existingCategories = $catStmt->fetchAll(PDO::FETCH_COLUMN);
+
+
 $search = trim((string) ($_GET['q'] ?? ''));
 $sql = 'SELECT p.*, COALESCE(i.quantity, 0) AS quantity FROM products p LEFT JOIN inventory i ON i.product_id=p.id WHERE p.is_active=1';
 $params = [];
@@ -77,11 +83,20 @@ require __DIR__ . '/includes/header.php';
 <section class="split-layout">
     <article class="panel form-panel">
         <div class="panel-heading"><div><h2><?= $editing ? 'Edit product' : 'Add product' ?></h2><p>Set catalogue details and reorder threshold.</p></div><?php if ($editing): ?><a class="text-link" href="products.php">Cancel</a><?php endif; ?></div>
-        <form method="post" class="form-stack">
+        <form method="post" class="form-stack" autocomplete="off">
             <?= csrf_field() ?><input type="hidden" name="action" value="save"><input type="hidden" name="id" value="<?= e($editing['id'] ?? 0) ?>">
             <div class="field-grid"><div><label for="sku">SKU / product code *</label><input id="sku" name="sku" maxlength="60" required value="<?= e($editing['sku'] ?? '') ?>" placeholder="e.g. PRD-001"></div><div><label for="name">Product name *</label><input id="name" name="name" maxlength="150" required value="<?= e($editing['name'] ?? '') ?>" placeholder="Product name"></div></div>
-            <div><label for="category">Category</label><input id="category" name="category" maxlength="100" value="<?= e($editing['category'] ?? '') ?>" placeholder="e.g. Electronics"></div>
-            <div><label for="description">Description</label><textarea id="description" name="description" rows="3" maxlength="1000" placeholder="Optional product details"><?= e($editing['description'] ?? '') ?></textarea></div>
+            
+            <div>
+                <label for="category">Category</label>
+                <input id="category" name="category" list="category-list" maxlength="100" value="<?= e($editing['category'] ?? '') ?>" placeholder="Select or type a new category" autocomplete="off">
+                <datalist id="category-list">
+                    <?php foreach ($existingCategories as $cat): ?>
+                        <option value="<?= e($cat) ?>"></option>
+                    <?php endforeach; ?>
+                </datalist>
+            </div>
+            <div><label for="description">Description</label><textarea id="description" name="description" rows="3" maxlength="1000" placeholder="Optional product details" autocomplete="off"><?= e($editing['description'] ?? '') ?></textarea></div>
             <div class="field-grid three-cols"><div><label for="unit_price">Selling price (KSh) *</label><input id="unit_price" name="unit_price" type="number" min="0" step="0.01" required value="<?= e($editing['unit_price'] ?? '0.00') ?>"></div><div><label for="cost_price">Unit cost (KSh)</label><input id="cost_price" name="cost_price" type="number" min="0" step="0.01" value="<?= e($editing['cost_price'] ?? '0.00') ?>"></div><div><label for="reorder_level">Reorder at</label><input id="reorder_level" name="reorder_level" type="number" min="0" step="0.01" value="<?= e($editing['reorder_level'] ?? '0') ?>"></div></div>
             <button class="button button-primary" type="submit"><?= $editing ? 'Save changes' : 'Create product' ?></button>
         </form>

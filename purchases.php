@@ -107,7 +107,8 @@ require __DIR__ . '/includes/header.php';
         <?php if (!$orders): ?>
             <div class="empty-state compact"><strong>No purchase orders yet</strong><p>Create your first order using the form on the left.</p></div>
         <?php else: ?>
-            <div class="table-wrap"><table><thead><tr><th>PO #</th><th>Supplier</th><th>Items</th><th>Total</th><th>Status</th><th>Expected</th></tr></thead><tbody>
+            <!-- Added 'Actions' to the table header -->
+            <div class="table-wrap"><table><thead><tr><th>PO #</th><th>Supplier</th><th>Items</th><th>Total</th><th>Status</th><th>Expected</th><th>Actions</th></tr></thead><tbody>
             <?php foreach ($orders as $order): 
                 $pill = match($order['status']) {
                     'received' => 'success', 'part_received' => 'info', 'cancelled' => 'neutral', 'submitted' => 'warning', default => 'warning'
@@ -120,6 +121,10 @@ require __DIR__ . '/includes/header.php';
                     <td><?= e(money($order['total_amount'])) ?></td>
                     <td><span class="pill pill-<?= $pill ?>"><?= e(ucwords(str_replace('_', ' ', $order['status']))) ?></span></td>
                     <td><?= e(format_day($order['expected_date'])) ?></td>
+                    <!-- NEW: Create Invoice Button -->
+                    <td>
+                        <a href="supplier_invoices.php?po_id=<?= (int) $order['id'] ?>&supplier_id=<?= (int) $order['supplier_id'] ?>" class="button button-secondary" style="padding: 4px 8px; font-size: 12px; text-decoration: none; white-space: nowrap;">Create Invoice</a>
+                    </td>
                 </tr>
             <?php endforeach; ?>
             </tbody></table></div>
